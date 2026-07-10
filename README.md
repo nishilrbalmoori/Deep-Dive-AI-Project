@@ -16,5 +16,5 @@ Constraints:
 
 # Authors:
 
-Nishil Balmoori - @nishilrbalmoori
-Gobind Singh - @god546
+- Nishil Balmoori - @nishilrbalmoori
+- Gobind Singh - @god546
