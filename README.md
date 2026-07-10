@@ -13,3 +13,8 @@ Constraints:
 
 - Each team may have a different amount then 11, for the simple purpose of minimizing complexity
 - Graphics won't be all that great, don't expect a AAA Game.
+
+# Authors:
+
+Nishil Balmoori - @nishilrbalmoori
+Gobind Singh - @god546
