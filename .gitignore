@@ -1,53 +1,53 @@
 # =========================================
-# Ignore everything inside Soccer/ EXCEPT:
+# Ignore everything inside UnityProjSoccer/ EXCEPT:
 # - Assets/
 # - ProjectSettings/  
 # - Packages/
 # - (and their contents)
 # =========================================
 
-# First, ignore everything in Soccer
-Soccer/*
+# First, ignore everything in UnityProjSoccer
+UnityProjSoccer/*
 
 # Then, explicitly allow the important folders
-!Soccer/Assets/
-!Soccer/Assets/**/*
-!Soccer/ProjectSettings/
-!Soccer/ProjectSettings/**/*
-!Soccer/Packages/
-!Soccer/Packages/**/*
+!UnityProjSoccer/Assets/
+!UnityProjSoccer/Assets/**/*
+!UnityProjSoccer/ProjectSettings/
+!UnityProjSoccer/ProjectSettings/**/*
+!UnityProjSoccer/Packages/
+!UnityProjSoccer/Packages/**/*
 
 # =========================================
 # Unity temp/cache files (inside allowed folders)
 # =========================================
-Soccer/*/Library/
-Soccer/*/Temp/
-Soccer/*/obj/
-Soccer/*/Build/
-Soccer/*/Builds/
-Soccer/*/UserSettings/
-Soccer/*/Logs/
+UnityProjSoccer/*/Library/
+UnityProjSoccer/*/Temp/
+UnityProjSoccer/*/obj/
+UnityProjSoccer/*/Build/
+UnityProjSoccer/*/Builds/
+UnityProjSoccer/*/UserSettings/
+UnityProjSoccer/*/Logs/
 
 # =========================================
 # Unity project files (these get regenerated)
 # =========================================
-Soccer/*.sln
-Soccer/*.csproj
-Soccer/*.user
-Soccer/*.userprefs
-Soccer/*.pidb
-Soccer/*.booproj
-Soccer/*.suo
-Soccer/*.cache
-Soccer/*.csproj.user
-Soccer/*.unityproj
-Soccer/*.prefs
-Soccer/*.assetproj
-Soccer/*.sin
-Soccer/*.pidb.meta
-Soccer/*.pdb
-Soccer/*.mdb
-Soccer/*.pdb.meta
+UnityProjSoccer/*.sln
+UnityProjSoccer/*.csproj
+UnityProjSoccer/*.user
+UnityProjSoccer/*.userprefs
+UnityProjSoccer/*.pidb
+UnityProjSoccer/*.booproj
+UnityProjSoccer/*.suo
+UnityProjSoccer/*.cache
+UnityProjSoccer/*.csproj.user
+UnityProjSoccer/*.unityproj
+UnityProjSoccer/*.prefs
+UnityProjSoccer/*.assetproj
+UnityProjSoccer/*.sin
+UnityProjSoccer/*.pidb.meta
+UnityProjSoccer/*.pdb
+UnityProjSoccer/*.mdb
+UnityProjSoccer/*.pdb.meta
 
 # =========================================
 # OS generated files
@@ -77,5 +77,5 @@ Desktop.ini
 # =========================================
 # Unity package manager
 # =========================================
-Soccer/Packages/Package-Manager/
-Soccer/Packages/Assets/
+UnityProjSoccer/Packages/Package-Manager/
+UnityProjSoccer/Packages/Assets/
