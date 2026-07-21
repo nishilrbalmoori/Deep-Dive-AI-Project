@@ -168,7 +168,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   isActive: 0
-  mouse_sens: 100
   speed: 5
 --- !u!54 &140709962
 Rigidbody:
@@ -718,7 +717,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   isActive: 0
-  mouse_sens: 100
   speed: 5
 --- !u!54 &641374346
 Rigidbody:
@@ -1085,7 +1083,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1460228622}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.45115995, y: 1.5500001, z: 6.14}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1105,7 +1103,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   isActive: 1
-  mouse_sens: 100
   speed: 5
 --- !u!54 &1460228625
 Rigidbody:
@@ -1261,7 +1258,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   isActive: 0
-  mouse_sens: 100
   speed: 5
 --- !u!54 &1654102263
 Rigidbody:
@@ -1417,7 +1413,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   isActive: 0
-  mouse_sens: 100
   speed: 5
 --- !u!54 &2004534485
 Rigidbody:

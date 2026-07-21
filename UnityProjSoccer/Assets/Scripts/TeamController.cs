@@ -56,11 +56,15 @@ public class TeamController : MonoBehaviour
             active_2_un.isActive = false;
             un_2_active.isActive = true;
 
-            FollowActivePlayer();
+            FollowActivePlayer(min);
         }
     }
 
-        private void FollowActivePlayer()
+    private void FollowActivePlayer(GameObject player)
+    {
+        camera.Target.TrackingTarget = player.transform;
+    }
+    private void FollowActivePlayer()
     {
         foreach(GameObject player in players)
         {
@@ -73,4 +77,6 @@ public class TeamController : MonoBehaviour
             }
         }
     }
+
+
 }
