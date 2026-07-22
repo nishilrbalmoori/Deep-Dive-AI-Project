@@ -5,6 +5,7 @@ using System.Collections.Generic;
 public class TeamController : MonoBehaviour
 {
     public CinemachineCamera camera;
+    public Transform ball;
     private List<GameObject> players = new List<GameObject>();
     void Start()
     {        
@@ -39,7 +40,7 @@ public class TeamController : MonoBehaviour
             {
                 if(player.GetEntityId().GetHashCode() != active.GetEntityId().GetHashCode())
                 {
-                    dists.Add(player, Vector3.Distance(active.transform.position, player.transform.position));
+                    dists.Add(player, Vector3.Distance(player.transform.position, ball.position));
                 }
             }
 
