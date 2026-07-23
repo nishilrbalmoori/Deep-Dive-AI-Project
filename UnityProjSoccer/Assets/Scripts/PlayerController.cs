@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
@@ -12,12 +13,13 @@ public class PlayerController : MonoBehaviour
     private Vector3 movement_activation;
 
 
-    private bool isIdle = true, isLeft = false, isRight = false;    
+    private bool isIdle = true, isLeft = false, isRight = false, isSprinting = false;    
 
 
 
     [SerializeField]
     private float sprintSpeed = 7.5f;
+    private float runSpeed = 5.0f;
     private float speed = 5.0f;
     private float ballFollowSpeed = 2.5f;
 
@@ -39,10 +41,12 @@ public class PlayerController : MonoBehaviour
            PlayerInput(horiz);
            PlayerActiveAnimate(horiz);
         }
-        else
-        {
-            NotActiveAnimate();
-        }
+
+
+        animator.SetBool("isIdle", isIdle);
+        animator.SetBool("isLeft", isLeft);
+        animator.SetBool("isRight", isRight);
+        animator.SetBool("isSprinting", isSprinting);
 
     }
 
@@ -57,40 +61,44 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void NotActiveAnimate()
-    {
-        isLeft = false;
-        isRight = false;
-
-        if(rb.linearVelocity.magnitude > 0) isIdle = false;
-        else isIdle = true;
-    }
-
     private void PlayerInput(float horiz)
     {
-        movement_activation = transform.forward * Input.GetAxis("Vertical") + transform.right * horiz;
+        
+        isSprinting = Input.GetKey(KeyCode.LeftShift) && !isIdle;
+        if (isSprinting)
+        {
+            movement_activation = transform.forward * Input.GetAxis("Vertical");
+        }
+        else
+        {
+            movement_activation = transform.forward * Input.GetAxis("Vertical") + transform.right * horiz;
+        }
     }
 
     private void PlayerActiveAnimate(float horiz)
     {
-        if(movement_activation.magnitude > 0) {
-            isIdle = false;
+        if(!isSprinting){
+            if(movement_activation.magnitude > 0) {
+                isIdle = false;
 
-            if(horiz > 0) isRight = true;
-            else if(horiz < 0) isLeft = true;
+                if(horiz > 0) isRight = true;
+                else if(horiz < 0) isLeft = true;
 
+            }
+            else isIdle = true;
+
+            if(horiz == 0)
+            {
+                isLeft = false;
+                isRight = false;
+            }
         }
-        else isIdle = true;
-
-        if(horiz == 0)
+        else
         {
             isLeft = false;
             isRight = false;
+            isIdle = false;
         }
-
-        animator.SetBool("isIdle", isIdle);
-        animator.SetBool("isLeft", isLeft);
-        animator.SetBool("isRight", isRight);
     }
 
     private void PlayerControl()
@@ -99,6 +107,9 @@ public class PlayerController : MonoBehaviour
         mousePosAdj -= SCREEN_PIVOT;
 
         float angle = (float)(Mathf.Atan2(mousePosAdj.x, mousePosAdj.y) * Mathf.Rad2Deg);
+
+        if(isSprinting) speed = sprintSpeed;
+        else speed = runSpeed;
 
         if(mousePosAdj.y > 0) transform.rotation = Quaternion.Euler(0, angle, 0);
         rb.linearVelocity = movement_activation*speed + new Vector3(0, rb.linearVelocity.y, 0);
@@ -109,12 +120,21 @@ public class PlayerController : MonoBehaviour
         Vector3 direction = ball.position - transform.position;
         direction.y = 0;
 
+        isLeft = false;
+        isRight = false;
+        isSprinting = false;
+
         if(direction.magnitude > followDistanceLimit)
         {
             transform.rotation = Quaternion.LookRotation(direction);
-            rb.linearVelocity =  transform.forward * ballFollowSpeed;   
+            rb.linearVelocity =  transform.forward * ballFollowSpeed;
+            isIdle = false;
+        }
+        else
+        {
+            rb.linearVelocity = Vector3.zero;
+            isIdle = true;
         }
     }
 
-    private void IsActiveAnim(){}
 }
