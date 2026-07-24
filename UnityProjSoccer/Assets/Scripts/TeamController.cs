@@ -27,7 +27,7 @@ public class TeamController : MonoBehaviour
 
     private void SwitchActivePlayer()
     {
-        if (Input.GetKeyDown(KeyCode.Space)){
+        if (Input.GetKeyDown(KeyCode.Return)){
             GameObject active = null;
             Dictionary<GameObject, float> dists = new Dictionary<GameObject, float>();
 

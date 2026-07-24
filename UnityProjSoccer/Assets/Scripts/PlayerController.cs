@@ -1,37 +1,41 @@
-using NUnit.Framework;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
 
-    public bool isActive = false    ;
+    [Header("Player Settings")]
+    public bool isActive = false;
    public Transform ball;
    public Animator animator;
 
+    public BallController ballController;
+
+
+    [Header("Movement")]
+    [SerializeField] private float sprintSpeed = 7.5f;
+    [SerializeField] private float runSpeed = 5.0f;
+    [SerializeField] private float ballFollowSpeed = 2.5f;
+
+    [SerializeField] private float followDistanceLimit = 10f;
+
+    [SerializeField] private float dribbleCooldown = 0.2f;
+    [SerializeField] private float mouseSens = 500f;
+
+
     private Rigidbody rb;
     private Vector3 movement_activation;
-
-
-    private bool isIdle = true, isLeft = false, isRight = false, isSprinting = false;    
-
-
-
-    [SerializeField]
-    private float sprintSpeed = 7.5f;
-    private float runSpeed = 5.0f;
-    private float speed = 5.0f;
-    private float ballFollowSpeed = 2.5f;
-
-    private float followDistanceLimit = 10f;
-
-    private Vector2 SCREEN_PIVOT = new Vector2(960, 0);
-
-
+    private float rot = 0, speed = 5.0f;
+    private float lastDribbleTime = 0f;
+    private bool isIdle = true, isLeft = false, isRight = false, isSprinting = false, isChargingKick = false;    
+    private int id;
     void Start(){
         Cursor.lockState = CursorLockMode.Locked;
         
         rb = this.GetComponent<Rigidbody>();
+
+        id = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
     }
 
     void Update(){
@@ -40,8 +44,8 @@ public class PlayerController : MonoBehaviour
            
            PlayerInput(horiz);
            PlayerActiveAnimate(horiz);
-        }
 
+        }
 
         animator.SetBool("isIdle", isIdle);
         animator.SetBool("isLeft", isLeft);
@@ -65,14 +69,30 @@ public class PlayerController : MonoBehaviour
     {
         
         isSprinting = Input.GetKey(KeyCode.LeftShift) && !isIdle;
-        if (isSprinting)
+        movement_activation = transform.forward * Input.GetAxis("Vertical") + transform.right * horiz;
+        
+        if(Input.GetKeyDown(KeyCode.Space) && ballController.HasPossession())
         {
-            movement_activation = transform.forward * Input.GetAxis("Vertical");
+            isChargingKick = true;
+            ballController.StartKickCharge();
         }
-        else
+
+        if(Input.GetKeyUp(KeyCode.Space) && isChargingKick)
         {
-            movement_activation = transform.forward * Input.GetAxis("Vertical") + transform.right * horiz;
+            isChargingKick = false;
+            Vector3 kickDirection = movement_activation + transform.forward;
+
+            if(kickDirection.sqrMagnitude < 0.01f) kickDirection = transform.forward;
+
+            ballController.ExecuteKick(kickDirection);
         }
+
+        if (Input.GetKeyDown(KeyCode.Mouse1) && isChargingKick)
+        {
+            isChargingKick = false;
+            ballController.CancelKick();
+        }
+         
     }
 
     private void PlayerActiveAnimate(float horiz)
@@ -103,16 +123,52 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerControl()
     {
-        Vector2 mousePosAdj = Input.mousePosition;
-        mousePosAdj -= SCREEN_PIVOT;
 
-        float angle = (float)(Mathf.Atan2(mousePosAdj.x, mousePosAdj.y) * Mathf.Rad2Deg);
+        rot += Input.GetAxis("Mouse X") * mouseSens * Time.deltaTime;
+        rot %= 360f;
 
-        if(isSprinting) speed = sprintSpeed;
-        else speed = runSpeed;
+        
+        if(isSprinting) {
+            speed = sprintSpeed;
 
-        if(mousePosAdj.y > 0) transform.rotation = Quaternion.Euler(0, angle, 0);
+            if(movement_activation.sqrMagnitude > 0.001f) transform.rotation = Quaternion.LookRotation(movement_activation);
+        }
+        else {
+            speed = runSpeed;
+            transform.rotation = Quaternion.Euler(0, rot, 0);
+        }
+
         rb.linearVelocity = movement_activation*speed + new Vector3(0, rb.linearVelocity.y, 0);
+
+        if(ballController.HasPossession() && !isChargingKick) HandleDribbling();
+        if(isChargingKick) ballController.UpdateKickCharge();
+    }
+
+    private void HandleDribbling(){
+        if(movement_activation.sqrMagnitude > 0.01f && Time.time > lastDribbleTime + dribbleCooldown)
+        {
+            Vector3 dribbleDir = movement_activation.normalized;
+            float forceMult = isSprinting ? 1.2f : 0.8f;
+
+            Vector3 randomOffset = new Vector3(
+                UnityEngine.Random.Range(-0.1f, 0.1f),
+                0,
+                UnityEngine.Random.Range(-0.1f, 0.1f)
+            );
+
+            ballController.Dribble(dribbleDir + randomOffset, forceMult);
+            lastDribbleTime = Time.time;
+        }
+        if (movement_activation.magnitude < 0.1f && ballController.HasPossession())
+        {
+            Vector3 toPlayer = transform.position - ball.position;
+            toPlayer.y = 0;
+            
+            if (toPlayer.magnitude > 1.2f)
+            {
+                ballController.Dribble(-toPlayer.normalized, 0.5f);
+            }
+        }
     }
 
     private void BallFollow()
@@ -127,7 +183,7 @@ public class PlayerController : MonoBehaviour
         if(direction.magnitude > followDistanceLimit)
         {
             transform.rotation = Quaternion.LookRotation(direction);
-            rb.linearVelocity =  transform.forward * ballFollowSpeed;
+            rb.linearVelocity = transform.forward * ballFollowSpeed;
             isIdle = false;
         }
         else
@@ -136,5 +192,18 @@ public class PlayerController : MonoBehaviour
             isIdle = true;
         }
     }
+
+    private void OnGUI()
+    {
+        if (isChargingKick && ballController.HasPossession())
+        {
+            float chargePercent = ballController.GetChargePercentage();
+            GUI.Box(new Rect(Screen.width / 2 - 50, Screen.height - 50, 100, 20), "");
+            GUI.Box(new Rect(Screen.width / 2 - 48, Screen.height - 48, 96 * chargePercent, 16), "");
+            GUI.Label(new Rect(Screen.width / 2 - 30, Screen.height - 70, 100, 20), 
+                $"Kick Power: {Mathf.Round(chargePercent * 100)}%");
+        }
+    }
+
 
 }

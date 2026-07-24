@@ -1,14 +1,69 @@
 fileFormatVersion: 2
-guid: 8bf54c87529430746b3df1018fd034f9
+guid: 6c7259125756faf448602d3f66c4e1a7
 ModelImporter:
   serializedVersion: 24501
   internalIDToNameTable: []
   externalObjects:
   - first:
-      type: UnityEngine:Texture2D
+      type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: stadium field
-    second: {fileID: 2800000, guid: 9b1092b0a8f7142428a2404f73189e24, type: 3}
+      name: Black
+    second: {fileID: 2100000, guid: 00a826f4b535d4145a8921cd86afb699, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Stadium light
+    second: {fileID: 2100000, guid: dbb9cab062b568a4c8af5aa8450e6228, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: TREE
+    second: {fileID: 2100000, guid: 4f591382eeb91ca4389cf1e2072c5e37, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: WOOD
+    second: {fileID: 2100000, guid: 3aa3ff6b7a9f8494d9453f7b874ffd1d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: White
+    second: {fileID: 2100000, guid: 27d444d173740434d9aa5f1490d01591, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: concrete
+    second: {fileID: 2100000, guid: c7d8d60c5d0269a4aa95a1390a8e55e0, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cyan
+    second: {fileID: 2100000, guid: 337beb688d9e12d4ba701f5988c1fa65, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: field
+    second: {fileID: 2100000, guid: e6d7321453648f340b2386795b5e278d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: grassy
+    second: {fileID: 2100000, guid: d5fd0612457f62b49aaaf168359d5f0f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: green field
+    second: {fileID: 2100000, guid: cfef6674cfa86f042a8c6ca4a0c22765, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: plastic.001
+    second: {fileID: 2100000, guid: c6c3c169d08a6f5428fbc7ca4f6f4ca5, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: seats
+    second: {fileID: 2100000, guid: 052b681289e005b418ba636ce6da9608, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0
