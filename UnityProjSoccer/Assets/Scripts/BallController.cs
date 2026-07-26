@@ -5,10 +5,11 @@ public class BallController : MonoBehaviour
      
 
     [Header("Ball Settings")]
-    [SerializeField] private float  kickForce = 0.1f, currentKickForce = 0f, maxKickForce=0.2f, kickChargeSpeed = 0.01f;
+    [SerializeField] private float  kickForce = 8f, currentKickForce = 0f, maxKickForce=20f, kickChargeSpeed = 15f;
     [SerializeField] private float dribbleForce = 8f;
-    [SerializeField] private float groundDrag = 0.98f, drag = 0.95f;
-    [SerializeField ]private float maxSpeed = 15f;
+    [SerializeField ]private float maxSpeed = 20f;
+
+     [SerializeField] private float possessionDistance = 5f;
 
     private Vector3 lastVel;
     private Rigidbody rb;
@@ -17,15 +18,21 @@ public class BallController : MonoBehaviour
     void Start()
     {
         rb = this.GetComponent<Rigidbody>();
+        
+        
+        rb.mass = 0.45f; 
         rb.linearDamping = 0.5f;
         rb.angularDamping = 0.5f;
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotation;
+
+        rb.interpolation = RigidbodyInterpolation.Interpolate;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.constraints = RigidbodyConstraints.FreezeRotationX;
 
     }
 
     void FixedUpdate()
     {
-        ApplyDrag();
+    
     }
     void Update()
     {
@@ -36,31 +43,13 @@ public class BallController : MonoBehaviour
     {
         if(HasPossession())
         {
-            if(Vector3.Distance(transform.position, possessingPlayer.transform.position) > 3f)
+            if(Vector3.Distance(transform.position, possessingPlayer.transform.position) > possessionDistance)
             {
                 canKick = false;
                 possessingPlayer = null;
             }
         }
     }
-
-    private void ApplyDrag()
-    {
-        if(rb.linearVelocity.sqrMagnitude > 0.01f)
-        {
-            Vector3 vel = rb.linearVelocity;
-            vel.y = 0;
-            
-            float currDrag = (rb.linearVelocity.y < 0.1f && rb.linearVelocity.y > -0.1f) ? groundDrag : drag; 
-            vel *= currDrag;
-
-            if(vel.magnitude > maxSpeed) vel = vel.normalized * maxSpeed;
-            rb.linearVelocity = new Vector3(vel.x, rb.linearVelocity.y, vel.z);
-        }
-
-        lastVel = rb.linearVelocity;
-    }
-
     public void StartKickCharge()
     {
         if(HasPossession())
@@ -82,11 +71,15 @@ public class BallController : MonoBehaviour
     {
         if(HasPossession())
         {
-            Vector3 kickDirection = direction.normalized;
-            float finalForce = currentKickForce * forceMult;
-            Vector3 upwardForce = Vector3.up * finalForce * 0.001f;
+            rb.linearVelocity = Vector3.zero;
+            rb.angularVelocity = Vector3.zero;
 
-            rb.AddForce(kickDirection * finalForce + upwardForce, ForceMode.Impulse);
+            float finalForce = kickForce * forceMult;
+            Vector3 kickDirection = (direction.normalized + Vector3.up * 0.2f).normalized;
+
+            rb.AddForce(kickDirection * finalForce, ForceMode.Impulse);
+
+            if (rb.linearVelocity.magnitude > maxSpeed) rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
 
             ReleaseBall();
         }
@@ -121,6 +114,7 @@ public class BallController : MonoBehaviour
             toPlayer.y = 0;
 
             if(toPlayer.magnitude > 1.5f) force += toPlayer.normalized * dribbleForce * 0.5f;
+            
 
             rb.AddForce(force, ForceMode.Force);
         }

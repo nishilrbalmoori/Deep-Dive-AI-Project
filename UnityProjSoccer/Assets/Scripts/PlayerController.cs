@@ -127,16 +127,8 @@ public class PlayerController : MonoBehaviour
         rot += Input.GetAxis("Mouse X") * mouseSens * Time.deltaTime;
         rot %= 360f;
 
-        
-        if(isSprinting) {
-            speed = sprintSpeed;
-
-            if(movement_activation.sqrMagnitude > 0.001f) transform.rotation = Quaternion.LookRotation(movement_activation);
-        }
-        else {
-            speed = runSpeed;
-            transform.rotation = Quaternion.Euler(0, rot, 0);
-        }
+        speed = (isSprinting) ? sprintSpeed : runSpeed;
+        transform.rotation = Quaternion.Euler(0, rot, 0);
 
         rb.linearVelocity = movement_activation*speed + new Vector3(0, rb.linearVelocity.y, 0);
 
@@ -192,18 +184,4 @@ public class PlayerController : MonoBehaviour
             isIdle = true;
         }
     }
-
-    private void OnGUI()
-    {
-        if (isChargingKick && ballController.HasPossession())
-        {
-            float chargePercent = ballController.GetChargePercentage();
-            GUI.Box(new Rect(Screen.width / 2 - 50, Screen.height - 50, 100, 20), "");
-            GUI.Box(new Rect(Screen.width / 2 - 48, Screen.height - 48, 96 * chargePercent, 16), "");
-            GUI.Label(new Rect(Screen.width / 2 - 30, Screen.height - 70, 100, 20), 
-                $"Kick Power: {Mathf.Round(chargePercent * 100)}%");
-        }
-    }
-
-
 }
