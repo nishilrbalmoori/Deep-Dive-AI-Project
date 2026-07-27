@@ -4,20 +4,37 @@ using System.Collections.Generic;
 
 public class TeamController : MonoBehaviour
 {
+    public const string ATTACKER = "Attacker";
+    public const string DEFENDER = "Defender";
+    public const string GOALIE = "Goalie";
+
+    public const int ATTACKER_COUNT = 2;
+    public const int DEFENDER_COUNT = 2;
+
+    public GameObject playerPositionings;
+
     public CinemachineCamera camera;
     public Transform ball;
     private List<GameObject> players = new List<GameObject>();
     void Start()
     {        
+        InitPlayers();
+        FollowActivePlayer();
+    }
 
-        //Init Players In A Team
+    private void InitPlayers()
+    {
+        int aCount = 0, dCount = 0;
         foreach(Transform child in transform){
             if (child.TryGetComponent<PlayerController>(out PlayerController script)){
+                script.role = (aCount < ATTACKER_COUNT) ? ATTACKER : (dCount < DEFENDER_COUNT) ? DEFENDER : GOALIE;
+                script.rolePosition = (aCount < ATTACKER_COUNT) ? aCount++ : (dCount < DEFENDER_COUNT) ? dCount++ : 0;
+                script.playerPositionings = playerPositionings;
+
                 players.Add(child.gameObject);
+                script.Reset();
             }
         }
-
-        FollowActivePlayer();
     }
 
     void Update()
@@ -38,10 +55,9 @@ public class TeamController : MonoBehaviour
 
             foreach(GameObject player in players)
             {
-                if(player.GetEntityId().GetHashCode() != active.GetEntityId().GetHashCode())
-                {
+                if(player.GetEntityId().GetHashCode() != active.GetEntityId().GetHashCode()) 
                     dists.Add(player, Vector3.Distance(player.transform.position, ball.position));
-                }
+                
             }
 
             GameObject min = null;
@@ -79,5 +95,12 @@ public class TeamController : MonoBehaviour
         }
     }
 
+    public void Reset()
+    {
+        foreach(GameObject player in players){
+            if (player.TryGetComponent<PlayerController>(out PlayerController script)) script.Reset();
+        }
+        
+    }
 
 }

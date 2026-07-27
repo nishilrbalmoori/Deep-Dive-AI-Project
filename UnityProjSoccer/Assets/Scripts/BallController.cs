@@ -4,22 +4,27 @@ public class BallController : MonoBehaviour
 {
      
 
+
     [Header("Ball Settings")]
     [SerializeField] private float  kickForce = 8f, currentKickForce = 0f, maxKickForce=20f, kickChargeSpeed = 15f;
     [SerializeField] private float dribbleForce = 8f;
     [SerializeField ]private float maxSpeed = 20f;
 
-     [SerializeField] private float possessionDistance = 5f;
-
-    private Vector3 lastVel;
+    [SerializeField] private float possessionDistance = 5f;
     private Rigidbody rb;
     private PlayerController possessingPlayer;
     private bool canKick = false, isChargingKick = false;
+
     void Start()
     {
+        RigidBodyInit();
+        Reset();
+    }
+
+    private void RigidBodyInit()
+    {
         rb = this.GetComponent<Rigidbody>();
-        
-        
+
         rb.mass = 0.45f; 
         rb.linearDamping = 0.5f;
         rb.angularDamping = 0.5f;
@@ -27,13 +32,8 @@ public class BallController : MonoBehaviour
         rb.interpolation = RigidbodyInterpolation.Interpolate;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.constraints = RigidbodyConstraints.FreezeRotationX;
-
     }
 
-    void FixedUpdate()
-    {
-    
-    }
     void Update()
     {
         CheckPossesingPlayerDist();
@@ -114,7 +114,6 @@ public class BallController : MonoBehaviour
             toPlayer.y = 0;
 
             if(toPlayer.magnitude > 1.5f) force += toPlayer.normalized * dribbleForce * 0.5f;
-            
 
             rb.AddForce(force, ForceMode.Force);
         }
@@ -158,5 +157,16 @@ public class BallController : MonoBehaviour
                 ReleaseBall();
             }
         }
+    }
+
+    public void Reset(){
+        currentKickForce = 0;
+        possessingPlayer = null;
+        isChargingKick = false;
+        canKick = false;
+        
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+        transform.position = new Vector3(102.1f, -1f, -70.2f);
     }
 }

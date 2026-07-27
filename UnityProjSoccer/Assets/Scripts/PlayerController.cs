@@ -12,6 +12,9 @@ public class PlayerController : MonoBehaviour
 
     public BallController ballController;
 
+    public GameObject playerPositionings;
+
+    public BoxCollider collider;
 
     [Header("Movement")]
     [SerializeField] private float sprintSpeed = 7.5f;
@@ -24,17 +27,26 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float mouseSens = 500f;
 
 
+    public string role;
+    public int rolePosition;
+
     private Rigidbody rb;
     private Vector3 movement_activation;
     private float rot = 0, speed = 5.0f;
     private float lastDribbleTime = 0f;
-    private bool isIdle = true, isLeft = false, isRight = false, isSprinting = false, isChargingKick = false;    
+    private bool isIdle = true, isLeft = false, isRight = false, isSprinting = false, isChargingKick = false;  
+    public bool withinSoftBoundaries = true;  
     private int id;
     void Start(){
         Cursor.lockState = CursorLockMode.Locked;
         
-        rb = this.GetComponent<Rigidbody>();
+        Init();
+    }
 
+    private void Init()
+    {
+        rb = this.GetComponent<Rigidbody>();
+        collider = this.GetComponent<BoxCollider>();
         id = UnityEngine.Random.Range(Int32.MinValue, Int32.MaxValue);
     }
 
@@ -46,22 +58,27 @@ public class PlayerController : MonoBehaviour
            PlayerActiveAnimate(horiz);
 
         }
+        UpdateAnimator();
+    }
 
+
+    private void UpdateAnimator()
+    {
         animator.SetBool("isIdle", isIdle);
         animator.SetBool("isLeft", isLeft);
         animator.SetBool("isRight", isRight);
         animator.SetBool("isSprinting", isSprinting);
-
     }
-
     void FixedUpdate()
     {
-        if(isActive){
-            PlayerControl();
-        }
+        if(isActive) PlayerControl();
         else
         {
-            BallFollow();
+            if(withinSoftBoundaries) BallFollow();
+            else {
+                isIdle = true;
+                rb.linearVelocity = Vector3.zero;
+            }
         }
     }
 
@@ -183,5 +200,28 @@ public class PlayerController : MonoBehaviour
             rb.linearVelocity = Vector3.zero;
             isIdle = true;
         }
+    }
+
+    public void Reset()
+    {
+        rb.linearVelocity = Vector3.zero;
+        movement_activation = Vector3.zero;
+        rot = 0;
+
+        foreach(Transform playingPosition in playerPositionings.transform){
+
+            if(playingPosition.name == $"{role} {rolePosition}"){
+                foreach(Transform child in playingPosition){
+                    transform.position = child.position;
+                    if (child.TryGetComponent<PositioningController>(out PositioningController script))
+                        script.playerController = this;
+                }
+            }
+        }
+
+        withinSoftBoundaries = true;
+        isIdle = true; isLeft = false; isRight = false; isSprinting = false; isChargingKick = false;
+        
+        UpdateAnimator();
     }
 }
