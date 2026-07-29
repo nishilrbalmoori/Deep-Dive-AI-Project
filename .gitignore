@@ -1,0 +1,114 @@
+# =========================================
+# Ignore everything inside UnityProjSoccer/ EXCEPT:
+# - Assets/
+# - ProjectSettings/  
+# - Packages/
+# - (and their contents)
+# =========================================
+
+# First, ignore everything in UnityProjSoccer
+UnityProjSoccer/*
+
+# Then, explicitly allow the important folders
+!UnityProjSoccer/Assets/
+!UnityProjSoccer/Assets/**/*
+!UnityProjSoccer/ProjectSettings/
+!UnityProjSoccer/ProjectSettings/**/*
+!UnityProjSoccer/Packages/
+!UnityProjSoccer/Packages/**/*
+
+# =========================================
+# Unity temp/cache files (inside allowed folders)
+# =========================================
+UnityProjSoccer/*/Library/
+UnityProjSoccer/*/Temp/
+UnityProjSoccer/*/obj/
+UnityProjSoccer/*/Build/
+UnityProjSoccer/*/Builds/
+UnityProjSoccer/*/UserSettings/
+UnityProjSoccer/*/Logs/
+
+# =========================================
+# Unity project files (these get regenerated)
+# =========================================
+UnityProjSoccer/*.sln
+UnityProjSoccer/*.csproj
+UnityProjSoccer/*.user
+UnityProjSoccer/*.userprefs
+UnityProjSoccer/*.pidb
+UnityProjSoccer/*.booproj
+UnityProjSoccer/*.suo
+UnityProjSoccer/*.cache
+UnityProjSoccer/*.csproj.user
+UnityProjSoccer/*.unityproj
+UnityProjSoccer/*.prefs
+UnityProjSoccer/*.assetproj
+UnityProjSoccer/*.sin
+UnityProjSoccer/*.pidb.meta
+UnityProjSoccer/*.pdb
+UnityProjSoccer/*.mdb
+UnityProjSoccer/*.pdb.meta
+
+# =========================================
+# OS generated files
+# =========================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+*.tmp
+*.log
+*.bak
+
+# =========================================
+# IDE files
+# =========================================
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# =========================================
+# Unity package manager
+# =========================================
+UnityProjSoccer/Packages/Package-Manager/
+UnityProjSoccer/Packages/Assets/
+
+# =========================================
+# Python virtual environments
+# =========================================
+mlagent-env/
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# =========================================
+# ML-Agents training
+# =========================================
+
+# Keep training config
+# trainer_config.yaml is NOT ignored
+
+# Ignore huge default outputs
+results/*
+*.pt
+
+# Keep selected training runs
+!results/SoccerRun1/
+
+# TensorBoard logs (keep if you want to show learning curves)
+# Comment this out if you want them tracked
+# tensorboard/
+
+# Ignore temporary checkpoints
+checkpoints/
