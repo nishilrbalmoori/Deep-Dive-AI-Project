@@ -1,15 +1,23 @@
 using UnityEngine;
 
-public class Netcontroller : MonoBehaviour
+public class NetController : MonoBehaviour
 {
-    public TeamController team1Controller;
+    public TeamController team1Controller, team2Controller;
     public BallController ballController;
     void OnTriggerEnter(Collider other)
     {
         if(other.CompareTag("Ball"))
         {
-            team1Controller.Reset();
-            ballController.Reset();
+            if(gameObject.name == "Opposing Net") {
+                team1Controller.OnScore();
+                team2Controller.OffScore();
+            }
+            else
+            {
+                team2Controller.OnScore();
+                team1Controller.OffScore();
+            }
         }
     }
+
 }

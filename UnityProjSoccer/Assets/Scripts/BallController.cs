@@ -2,18 +2,19 @@ using UnityEngine;
 
 public class BallController : MonoBehaviour
 {
-     
-
-
     [Header("Ball Settings")]
-    [SerializeField] private float  kickForce = 8f, currentKickForce = 0f, maxKickForce=20f, kickChargeSpeed = 15f;
+    [SerializeField] private float kickForce = 12f;
     [SerializeField] private float dribbleForce = 8f;
-    [SerializeField ]private float maxSpeed = 20f;
+    [SerializeField] private float maxSpeed = 25f;
+    [SerializeField] private float possessionDistance = 1.8f;
 
-    [SerializeField] private float possessionDistance = 5f;
-    private Rigidbody rb;
+    private float kickDistance = 2.5f;
+    private float dribbleDistance = 0.8f;
+    private float frontAngleThreshold = 0.3f;
+
+    public Rigidbody rb;
     private PlayerController possessingPlayer;
-    private bool canKick = false, isChargingKick = false;
+    private bool canKick = false;
 
     void Start()
     {
@@ -25,7 +26,7 @@ public class BallController : MonoBehaviour
     {
         rb = this.GetComponent<Rigidbody>();
 
-        rb.mass = 0.45f; 
+        rb.mass = 0.45f;
         rb.linearDamping = 0.5f;
         rb.angularDamping = 0.5f;
 
@@ -41,62 +42,47 @@ public class BallController : MonoBehaviour
 
     private void CheckPossesingPlayerDist()
     {
-        if(HasPossession())
+        if (HasPossession())
         {
-            if(Vector3.Distance(transform.position, possessingPlayer.transform.position) > possessionDistance)
+            if (Vector3.Distance(transform.position, possessingPlayer.transform.position) > possessionDistance)
             {
                 canKick = false;
                 possessingPlayer = null;
             }
         }
     }
-    public void StartKickCharge()
-    {
-        if(HasPossession())
-        {
-            isChargingKick = true;
-            currentKickForce = kickForce;
-        }
-    }
 
-    public void UpdateKickCharge()
-    {
-        if(isChargingKick && canKick)
-        {
-            currentKickForce += kickChargeSpeed * Time.deltaTime;
-            currentKickForce = Mathf.Min(currentKickForce, maxKickForce);
-        }
-    }
     public void ExecuteKick(Vector3 direction, float forceMult = 1f)
     {
-        if(HasPossession())
+        if (!HasPossession()) return;
+
+        float distToBall = Vector3.Distance(transform.position, possessingPlayer.transform.position);
+        if (distToBall > kickDistance)
         {
-            rb.linearVelocity = Vector3.zero;
-            rb.angularVelocity = Vector3.zero;
-
-            float finalForce = kickForce * forceMult;
-            Vector3 kickDirection = (direction.normalized + Vector3.up * 0.2f).normalized;
-
-            rb.AddForce(kickDirection * finalForce, ForceMode.Impulse);
-
-            if (rb.linearVelocity.magnitude > maxSpeed) rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
-
-            ReleaseBall();
+            Vector3 toPlayer = (possessingPlayer.transform.position - transform.position).normalized;
+            rb.AddForce(toPlayer * dribbleForce * 0.5f, ForceMode.Force);
+            return;
         }
+
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
+
+        float finalForce = kickForce * forceMult;
+        Vector3 kickDirection = (direction.normalized + Vector3.up * 0.2f).normalized;
+
+        rb.AddForce(kickDirection * finalForce, ForceMode.Impulse);
+
+        if (rb.linearVelocity.magnitude > maxSpeed) rb.linearVelocity = rb.linearVelocity.normalized * maxSpeed;
+
+        ReleaseBall();
     }
 
     public void ReleaseBall()
     {
-        CancelKick();
         canKick = false;
         possessingPlayer = null;
     }
 
-    public void CancelKick()
-    {
-        isChargingKick = false;
-        currentKickForce = kickForce;
-    }
     public void SetPossessingPlayer(PlayerController player)
     {
         possessingPlayer = player;
@@ -105,23 +91,42 @@ public class BallController : MonoBehaviour
 
     public void Dribble(Vector3 direction, float forceMult = 1f)
     {
-        if(HasPossession())
-        {
-            Vector3 dribbleDir = direction.normalized;
-            Vector3 force = dribbleDir * dribbleForce * forceMult;
-            Vector3 toPlayer = possessingPlayer.transform.position - transform.position;
-            
-            toPlayer.y = 0;
+        if (!HasPossession()) return;
 
-            if(toPlayer.magnitude > 1.5f) force += toPlayer.normalized * dribbleForce * 0.5f;
+        Vector3 dribbleDir = direction.normalized;
+        Vector3 force = dribbleDir * dribbleForce * forceMult;
+        Vector3 toPlayer = possessingPlayer.transform.position - transform.position;
 
-            rb.AddForce(force, ForceMode.Force);
-        }
+        toPlayer.y = 0;
+
+        if (toPlayer.magnitude > dribbleDistance) force += toPlayer.normalized * dribbleForce * 0.5f;
+
+        rb.AddForce(force, ForceMode.Force);
     }
 
     public bool HasPossession()
     {
-        return canKick && possessingPlayer != null;
+        if (!canKick || possessingPlayer == null) return false;
+
+        Vector3 toBall = (transform.position - possessingPlayer.transform.position).normalized;
+        float dot = Vector3.Dot(possessingPlayer.transform.forward, toBall);
+
+        return dot > frontAngleThreshold;
+    }
+
+    public bool HasPossession(PlayerController player)
+    {
+        if (!canKick || possessingPlayer != player) return false;
+
+        Vector3 toBall = (transform.position - player.transform.position).normalized;
+        float dot = Vector3.Dot(player.transform.forward, toBall);
+
+        return dot > frontAngleThreshold;
+    }
+
+    public TeamController GetTeamWithPossesion()
+    {
+        return HasPossession() ? possessingPlayer.team : null;
     }
 
     private void OnTriggerEnter(Collider other)
@@ -129,22 +134,8 @@ public class BallController : MonoBehaviour
         if (other.CompareTag("Player") && !canKick)
         {
             PlayerController player = other.GetComponent<PlayerController>();
-            if (player != null && player.isActive)
-            {
-                SetPossessingPlayer(player);
-            }
+            if (player != null && player.isActive) SetPossessingPlayer(player);
         }
-    }
-
-    public bool IsChargingKick()
-    {
-        return isChargingKick;
-    }
-
-    public float GetChargePercentage()
-    {
-        if (!isChargingKick) return 0f;
-        return (currentKickForce - kickForce) / (maxKickForce - kickForce);
     }
 
     private void OnTriggerExit(Collider other)
@@ -152,19 +143,15 @@ public class BallController : MonoBehaviour
         if (other.CompareTag("Player") && possessingPlayer != null)
         {
             PlayerController player = other.GetComponent<PlayerController>();
-            if (player != null && player == possessingPlayer)
-            {
-                ReleaseBall();
-            }
+            if (player != null && player == possessingPlayer) ReleaseBall();
         }
     }
 
-    public void Reset(){
-        currentKickForce = 0;
+    public void Reset()
+    {
         possessingPlayer = null;
-        isChargingKick = false;
         canKick = false;
-        
+
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
         transform.position = new Vector3(102.1f, -1f, -70.2f);

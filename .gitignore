@@ -79,3 +79,36 @@ Desktop.ini
 # =========================================
 UnityProjSoccer/Packages/Package-Manager/
 UnityProjSoccer/Packages/Assets/
+
+# =========================================
+# Python virtual environments
+# =========================================
+mlagent-env/
+venv/
+.venv/
+env/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# =========================================
+# ML-Agents training
+# =========================================
+
+# Keep training config
+# trainer_config.yaml is NOT ignored
+
+# Ignore huge default outputs
+results/*
+*.pt
+
+# Keep selected training runs
+!results/SoccerRun1/
+
+# TensorBoard logs (keep if you want to show learning curves)
+# Comment this out if you want them tracked
+# tensorboard/
+
+# Ignore temporary checkpoints
+checkpoints/

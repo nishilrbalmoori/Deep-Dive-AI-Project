@@ -1,0 +1,65 @@
+{
+    "Soccer": {
+        "checkpoints": [
+            {
+                "steps": 8499834,
+                "file_path": "results\\SoccerRun1\\Soccer\\Soccer-8499834.onnx",
+                "reward": 115.18967839291221,
+                "creation_time": 1785243611.508189,
+                "auxillary_file_paths": [
+                    "results\\SoccerRun1\\Soccer\\Soccer-8499834.pt"
+                ]
+            },
+            {
+                "steps": 8999946,
+                "file_path": "results\\SoccerRun1\\Soccer\\Soccer-8999946.onnx",
+                "reward": 92.63066875934601,
+                "creation_time": 1785244997.1711679,
+                "auxillary_file_paths": [
+                    "results\\SoccerRun1\\Soccer\\Soccer-8999946.pt"
+                ]
+            },
+            {
+                "steps": 9499844,
+                "file_path": "results\\SoccerRun1\\Soccer\\Soccer-9499844.onnx",
+                "reward": 109.13847732543945,
+                "creation_time": 1785249460.4925234,
+                "auxillary_file_paths": [
+                    "results\\SoccerRun1\\Soccer\\Soccer-9499844.pt"
+                ]
+            },
+            {
+                "steps": 9999994,
+                "file_path": "results\\SoccerRun1\\Soccer\\Soccer-9999994.onnx",
+                "reward": 109.16012573242188,
+                "creation_time": 1785250896.980294,
+                "auxillary_file_paths": [
+                    "results\\SoccerRun1\\Soccer\\Soccer-9999994.pt"
+                ]
+            },
+            {
+                "steps": 10000594,
+                "file_path": "results\\SoccerRun1\\Soccer\\Soccer-10000594.onnx",
+                "reward": 111.31083679199219,
+                "creation_time": 1785250897.0526404,
+                "auxillary_file_paths": [
+                    "results\\SoccerRun1\\Soccer\\Soccer-10000594.pt"
+                ]
+            }
+        ],
+        "final_checkpoint": {
+            "steps": 10000594,
+            "file_path": "results\\SoccerRun1\\Soccer.onnx",
+            "reward": 111.31083679199219,
+            "creation_time": 1785250897.0526404,
+            "auxillary_file_paths": [
+                "results\\SoccerRun1\\Soccer\\Soccer-10000594.pt"
+            ]
+        }
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.28.0",
+        "torch_version": "2.1.0+cpu"
+    }
+}

@@ -15,11 +15,17 @@ public class TeamController : MonoBehaviour
 
     public CinemachineCamera camera;
     public Transform ball;
-    private List<GameObject> players = new List<GameObject>();
+    public List<GameObject> players = new List<GameObject>();
+    public PlayerController activePlayer;
+
+    public bool isActive = false;
+
+    public bool useML = false, mlScoreDetected = false, mlConcededDetected = false;
     void Start()
     {        
         InitPlayers();
-        FollowActivePlayer();
+
+        if(isActive) FollowActivePlayer();
     }
 
     private void InitPlayers()
@@ -30,6 +36,8 @@ public class TeamController : MonoBehaviour
                 script.role = (aCount < ATTACKER_COUNT) ? ATTACKER : (dCount < DEFENDER_COUNT) ? DEFENDER : GOALIE;
                 script.rolePosition = (aCount < ATTACKER_COUNT) ? aCount++ : (dCount < DEFENDER_COUNT) ? dCount++ : 0;
                 script.playerPositionings = playerPositionings;
+                script.team = this;
+                script.useML = useML;
 
                 players.Add(child.gameObject);
                 script.Reset();
@@ -39,47 +47,59 @@ public class TeamController : MonoBehaviour
 
     void Update()
     {
-        SwitchActivePlayer();
+        if(isActive) SwitchActivePlayer();
+
     }
 
-    private void SwitchActivePlayer()
+    public void SwitchActivePlayer()
     {
         if (Input.GetKeyDown(KeyCode.Return)){
             GameObject active = null;
-            Dictionary<GameObject, float> dists = new Dictionary<GameObject, float>();
+            
 
 
             foreach(GameObject player in players){
                 if (player.GetComponent<PlayerController>().isActive) active = player;
             }            
 
-            foreach(GameObject player in players)
-            {
-                if(player.GetEntityId().GetHashCode() != active.GetEntityId().GetHashCode()) 
-                    dists.Add(player, Vector3.Distance(player.transform.position, ball.position));
-                
-            }
+            GameObject min = GetClosetPlayer();
 
-            GameObject min = null;
-
-            foreach(var(id, dist) in dists)
-            {
-                if(min == null || dists[id] < dists[min]) min = id;
-            }
 
             PlayerController active_2_un = active.GetComponent<PlayerController>();
             PlayerController un_2_active = min.GetComponent<PlayerController>();
 
-            active_2_un.isActive = false;
-            un_2_active.isActive = true;
+            if(un_2_active.id != active_2_un.id)
+            {
+                active_2_un.isActive = false;
+                un_2_active.isActive = true;
 
-            FollowActivePlayer(min);
+                FollowActivePlayer(min);
+            }
         }
+    }
+
+    public GameObject GetClosetPlayer()
+    {
+        Dictionary<GameObject, float> dists = new Dictionary<GameObject, float>();
+        foreach(GameObject player in players)
+        {
+            if(player.GetComponent<PlayerController>().id != activePlayer.id) dists.Add(player, Vector3.Distance(player.transform.position, ball.position));
+        }
+
+        GameObject min = null;
+
+        foreach(var(id, dist) in dists)
+        {
+            if(min == null || dists[id] < dists[min]) min = id;
+        }
+
+        return min;
     }
 
     private void FollowActivePlayer(GameObject player)
     {
         camera.Target.TrackingTarget = player.transform;
+        activePlayer = player.GetComponent<PlayerController>();
     }
     private void FollowActivePlayer()
     {
@@ -100,7 +120,15 @@ public class TeamController : MonoBehaviour
         foreach(GameObject player in players){
             if (player.TryGetComponent<PlayerController>(out PlayerController script)) script.Reset();
         }
-        
     }
 
+    public void OnScore()
+    {
+        if (useML) mlScoreDetected = true;
+    }
+
+    public void OffScore()
+    {
+        if (useML) mlConcededDetected = true;
+    }
 }
