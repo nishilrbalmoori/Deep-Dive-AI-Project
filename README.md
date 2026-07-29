@@ -30,3 +30,15 @@ Constraints:
 
 - Nishil Balmoori - @nishilrbalmoori
 - Gobind Singh - @god546
+
+# Citations:
+- Claude for slideshow:
+- APA: Anthropic. (2025). Claude. In Claude.ai. https://claude.ai/
+- Mixamo for animations and player:
+- APA: Adobe. (2008). Mixamo. In Mixamo. https://www.mixamo.com/#/
+- CgTrader for stadium asset:
+- APA: Low-poly Football Stadium Version 1 | CGTrader. (2026). Cgtrader.Com. https://www.cgtrader.com/items/2571967/download-page
+- Unity 3d docs:
+- APA: (n.d.). Https://Docs.Unity3d.Com/6000.5/Documentation/Manual/Quickstart3D.Html.
+- Unity ML docs:
+- APA: ML-Agents Overview | ML Agents | 3.0.0. (2023). In Unity3d.com. https://docs.unity3d.com/Packages/com.unity.ml-agents@3.0/manual/index.html.
